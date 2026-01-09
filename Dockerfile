@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
@@ -8,13 +8,12 @@ RUN apk add --no-cache git
 
 # Copy go mod files first for better caching
 COPY go.mod go.sum ./
-RUN go mod download
 
-# Copy the rest of the application
-COPY . .
+# Copy vendor directory (if using vendoring)
+COPY vendor/ ./vendor/
 
-# Build the server
-RUN CGO_ENABLED=0 GOOS=linux go build -o server -mod vendor ./cmd/server
+# Build the server (using vendoring)
+RUN CGO_ENABLED=0 GOOS=linux go build -mod vendor -o server ./cmd/server
 
 # Build the bot
 RUN CGO_ENABLED=0 GOOS=linux go build -o bot -mod vendor ./cmd/bot
