@@ -6,7 +6,6 @@ README.md
 agents.md
 *.log
 *.sqlite
-vendor/
 node_modules/
 dist/
 build/
