@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: testapp
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=production
+      - APP_PORT=8080
+      - DB_PATH=/app/data/app.db
+      - TG_BOT_TOKEN=${TG_BOT_TOKEN}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+    volumes:
+      - app_data:/app/data
+      - ./litestream.yml:/app/litestream.yml:ro
+    depends_on:
+      - litestream
+
+  litestream:
+    image: djc/litestream:latest
+    container_name: testapp-litestream
+    restart: unless-stopped
+    command: replicate -config /app/litestream.yml
+    volumes:
+      - app_data:/data
+      - ./litestream.yml:/app/litestream.yml:ro
+    environment:
+      - AWS_ACCESS_KEY_ID=${LITESTREAM_R2_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${LITESTREAM_R2_SECRET_ACCESS_KEY}
+
+volumes:
+  app_data:

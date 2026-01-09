@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>testapp</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>testapp</h1>
+        <p>test go/web/tg app to test claude skill</p>
+
+        <div id="user-info" class="user-info" style="display: none;">
+            <p>Welcome, <span id="user-name"></span>!</p>
+            <p>Your Telegram ID: <span id="user-id"></span></p>
+        </div>
+
+        <div class="actions">
+            <button id="hello-btn">Say Hello</button>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Check if running in Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+
+            // Pass initData to the app
+            const initData = Telegram.WebApp.initData;
+            console.log('Telegram WebApp initialized');
+
+            // Show user info if available
+            if (initData) {
+                try {
+                    const user = Telegram.WebApp.initDataUnsafe.user;
+                    if (user) {
+                        document.getElementById('user-info').style.display = 'block';
+                        document.getElementById('user-name').textContent = user.first_name;
+                        document.getElementById('user-id').textContent = user.id;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse user data:', e);
+                }
+            }
+        } else {
+            console.log('Running outside Telegram - demo mode');
+            document.getElementById('user-info').style.display = 'block';
+            document.getElementById('user-name').textContent = 'Demo User';
+            document.getElementById('user-id').textContent = '12345';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+version: "2"
+sql:
+  - schema: "sql/migrations"
+    queries: "sql/queries"
+    engine: "sqlite"
+    gen:
+      go:
+        package: "repository"
+        out: "internal/repository"
+        sql_package: "modernc.org/sqlite"

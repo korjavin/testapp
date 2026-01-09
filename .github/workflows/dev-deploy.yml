@@ -1,0 +1,91 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches-ignore: [master]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Get branch name
+        id: vars
+        run: echo "BRANCH_NAME=$(echo ${{ github.ref_name }} | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9-')" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=dev-${{ steps.vars.outputs.BRANCH_NAME }}
+            type=sha
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  update-deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout deploy-dev branch
+        uses: actions/checkout@v4
+        with:
+          ref: deploy-dev
+          sparse-checkout: docker-compose.dev.yml
+
+      - name: Update image tag in docker-compose.dev.yml
+        run: |
+          sed -i 's|image: ghcr.io/${{ github.repository }}:.*|image: ghcr.io/${{ github.repository }}:dev-${{ steps.vars.outputs.BRANCH_NAME }}|' docker-compose.dev.yml
+          cat docker-compose.dev.yml
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docker-compose.dev.yml
+          git commit -m "Update dev image to dev-${{ steps.vars.outputs.BRANCH_NAME }} (${{ github.sha }})" || echo "No changes to commit"
+          git push
+
+  webhook-dev:
+    needs: update-deploy-dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Portainer webhook for dev
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PORTainer_DEV_HOST }}
+          username: ${{ secrets.PORTainer_DEV_USER }}
+          key: ${{ secrets.PORTainer_DEV_SSH_KEY }}
+          script: |
+            curl -X POST ${{ secrets.PORTainer_WEBHOOK_DEV }}

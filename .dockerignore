@@ -1,0 +1,15 @@
+.git
+.env
+.env.local
+.gitignore
+README.md
+agents.md
+*.log
+*.sqlite
+vendor/
+node_modules/
+dist/
+build/
+.idea/
+.vscode/
+*.test

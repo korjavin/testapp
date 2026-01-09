@@ -1,0 +1,5 @@
+dbs:
+  - path: /data/app.db
+    replicas:
+      - url: ${LITESTREAM_REPLICATE_URL}
+        # credentials are provided via environment variables
