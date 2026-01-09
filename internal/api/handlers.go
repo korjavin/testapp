@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/iv/Projects/testapp/internal/db"
+	"github.com/korjavin/testapp/internal/db"
 )
 
 //go:embed web/*

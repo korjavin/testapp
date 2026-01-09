@@ -1,25 +1,27 @@
-module testapp
+module github.com/korjavin/testapp
 
-go 1.22
+go 1.24.0
 
 require (
-	github.com/pressly/goose/v3 v3.22.1
-	github.com/telegram-bot-api/v5 v5.5.1
-	modernc.org/sqlite v1.29.1
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+	github.com/pressly/goose/v3 v3.26.0
+	modernc.org/sqlite v1.43.0
 )
 
 require (
-	github.com/RemiKoutcherov/windmill v0.0.0-20240730074155-0aa48e7c7b07 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/jackc/pgx/v5 v5.6.0 // indirect
-	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/remyoudompheng/bigfft v0.0.0-20230129092722-21d4e38e3c2e // indirect
-	golang.org/x/crypto v0.21.0 // indirect
-	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	github.com/mfridman/interpolate v0.0.2 // indirect
+	github.com/ncruces/go-strftime v0.1.9 // indirect
+	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+	github.com/sethvargo/go-retry v0.3.0 // indirect
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	modernc.org/libc v1.66.10 // indirect
+	modernc.org/mathutil v1.7.1 // indirect
+	modernc.org/memory v1.11.0 // indirect
 )

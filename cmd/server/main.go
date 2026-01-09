@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/iv/Projects/testapp/internal/api"
-	"github.com/iv/Projects/testapp/internal/db"
-	"github.com/iv/Projects/testapp/internal/middleware"
+	"github.com/korjavin/testapp/internal/api"
+	"github.com/korjavin/testapp/internal/db"
+	"github.com/korjavin/testapp/internal/middleware"
 )
 
 func main() {
