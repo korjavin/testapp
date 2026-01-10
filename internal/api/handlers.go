@@ -10,7 +10,7 @@ import (
 	"github.com/korjavin/testapp/internal/db"
 )
 
-//go:embed web/*
+//go:embed ../web/*
 var staticFiles embed.FS
 
 func SetupRoutes() http.Handler {
@@ -50,7 +50,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	// Serve index.html for all non-file requests
 	if r.URL.Path == "/" || r.URL.Path == "/index.html" {
-		data, err := staticFiles.ReadFile("web/index.html")
+		data, err := staticFiles.ReadFile("index.html")
 		if err != nil {
 			slog.Error("failed to read index.html", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -62,7 +62,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Try to serve static file
-	data, err := staticFiles.ReadFile("web" + r.URL.Path)
+	data, err := staticFiles.ReadFile(strings.TrimPrefix(r.URL.Path, "/"))
 	if err != nil {
 		http.Error(w, "Not Found", http.StatusNotFound)
 		return

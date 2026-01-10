@@ -13,7 +13,7 @@ import (
 
 var DB *sql.DB
 
-//go:embed migrations/*.sql
+//go:embed sql/migrations/*.sql
 var migrations embed.FS
 
 func InitDatabase(path string) error {
@@ -31,7 +31,7 @@ func InitDatabase(path string) error {
 
 	// Run migrations
 	goose.SetBaseFS(migrations)
-	if err := goose.Up(DB, "migrations"); err != nil {
+	if err := goose.Up(DB, "sql/migrations"); err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)
 	}
 

@@ -11,8 +11,8 @@
 # Output of go coverage
 *.out
 
-# Go vendor
-vendor/
+# Go vendor (uncomment if NOT committing vendor directory)
+# vendor/
 
 # Environment
 .env
