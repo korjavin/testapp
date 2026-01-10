@@ -101,8 +101,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docker-compose.dev.yml
-          git commit -m "Update dev image to dev-${{ steps.vars.outputs.BRANCH_NAME }} (${{ github.sha }})" || echo "No changes to commit"
-          git push
+          if git commit -m "Update dev image to dev-${{ steps.vars.outputs.BRANCH_NAME }} (${{ github.sha }})"; then
+            echo "Changes committed, pushing..."
+            git push || echo "Push failed (may need write permissions)"
+          else
+            echo "No changes to commit, skipping push"
+          fi
+          echo "Dev deploy update completed"
 
   webhook-dev:
     needs: update-deploy-dev
