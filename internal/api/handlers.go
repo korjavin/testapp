@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strings"
 
