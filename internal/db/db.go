@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"embed"
 	"fmt"
 	"log/slog"
 	"os"
@@ -12,9 +11,6 @@ import (
 )
 
 var DB *sql.DB
-
-//go:embed sql/migrations/*.sql
-var migrations embed.FS
 
 func InitDatabase(path string) error {
 	var err error
@@ -29,8 +25,7 @@ func InitDatabase(path string) error {
 		return fmt.Errorf("failed to set WAL mode: %w", err)
 	}
 
-	// Run migrations
-	goose.SetBaseFS(migrations)
+	// Run migrations from sql/migrations directory
 	if err := goose.Up(DB, "sql/migrations"); err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)
 	}
