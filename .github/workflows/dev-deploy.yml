@@ -57,11 +57,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if deploy-dev branch exists
+        id: check-deploy-dev
+        run: |
+          if git rev-parse --verify deploy-dev >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create deploy-dev branch if it doesn't exist
+        if: steps.check-deploy-dev.outputs.exists == 'false'
+        run: |
+          git checkout master
+          git checkout -b deploy-dev
+          git push origin deploy-dev || true
+          echo "Deploy-dev branch created"
+
       - name: Checkout deploy-dev branch
         uses: actions/checkout@v4
         with:
           ref: deploy-dev
           sparse-checkout: docker-compose.dev.yml
+          fetch-depth: 0
 
       - name: Update image tag in docker-compose.dev.yml
         run: |
