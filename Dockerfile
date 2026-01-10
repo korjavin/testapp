@@ -12,6 +12,9 @@ COPY go.mod go.sum ./
 # Copy vendor directory (if using vendoring)
 COPY vendor/ ./vendor/
 
+# Copy the rest of the application
+COPY . .
+
 # Build the server (using vendoring)
 RUN CGO_ENABLED=0 GOOS=linux go build -mod vendor -o server ./cmd/server
 
