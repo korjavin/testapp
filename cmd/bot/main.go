@@ -71,9 +71,10 @@ func main() {
 			// Handle callback query
 			if update.CallbackQuery != nil {
 				if update.CallbackQuery.Data == "open_webapp" {
+					// Answer callback with notification
 					callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "Opening WebApp...")
-					if _, err := bot.Request(callback); err != nil {
-						slog.Error("Failed to send callback", "error", err)
+					if _, err := bot.AnswerCallbackQuery(callback); err != nil {
+						slog.Error("Failed to answer callback", "error", err)
 					}
 
 					webAppURL := "https://your-domain.com"
