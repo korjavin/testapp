@@ -45,7 +45,11 @@ func main() {
 	u.Timeout = 60
 
 	// Get updates channel
-	updates := bot.GetUpdatesChan(u)
+	updates, err := bot.GetUpdatesChan(u)
+	if err != nil {
+		slog.Error("Failed to get updates channel", "error", err)
+		os.Exit(1)
+	}
 
 	// Handle updates in goroutine
 	go func() {
