@@ -1,7 +1,6 @@
 package api
 
 import (
-	"embed"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -9,9 +8,6 @@ import (
 
 	"github.com/korjavin/testapp/internal/db"
 )
-
-//go:embed ../web/*
-var staticFiles embed.FS
 
 func SetupRoutes() http.Handler {
 	mux := http.NewServeMux()
@@ -22,8 +18,10 @@ func SetupRoutes() http.Handler {
 	// API routes
 	mux.HandleFunc("/api/hello", helloHandler)
 
-	// WebApp routes
+	// WebApp routes - serve static files from web/ directory
 	mux.HandleFunc("/", indexHandler)
+	mux.HandleFunc("/css/", staticHandler)
+	mux.HandleFunc("/js/", staticHandler)
 
 	return mux
 }
@@ -48,30 +46,32 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	// Serve index.html for all non-file requests
+	// Serve index.html for root path
 	if r.URL.Path == "/" || r.URL.Path == "/index.html" {
-		data, err := staticFiles.ReadFile("index.html")
-		if err != nil {
-			slog.Error("failed to read index.html", "error", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Write(data)
+		http.ServeFile(w, r, "web/index.html")
 		return
 	}
 
-	// Try to serve static file
-	data, err := staticFiles.ReadFile(strings.TrimPrefix(r.URL.Path, "/"))
-	if err != nil {
-		http.Error(w, "Not Found", http.StatusNotFound)
+	// Let staticHandler handle other files
+	staticHandler(w, r)
+}
+
+func staticHandler(w http.ResponseWriter, r *http.Request) {
+	// Remove prefix and serve from web/ directory
+	path := strings.TrimPrefix(r.URL.Path, "/")
+	if strings.HasPrefix(path, "css/") {
+		path = strings.TrimPrefix(path, "css/")
+		http.ServeFile(w, r, "web/css/"+path)
+		return
+	}
+	if strings.HasPrefix(path, "js/") {
+		path = strings.TrimPrefix(path, "js/")
+		http.ServeFile(w, r, "web/js/"+path)
 		return
 	}
 
-	// Set content type based on extension
-	contentType := getContentType(r.URL.Path)
-	w.Header().Set("Content-Type", contentType)
-	w.Write(data)
+	// Default: serve from web/
+	http.ServeFile(w, r, "web/"+path)
 }
 
 func getContentType(path string) string {
@@ -94,4 +94,3 @@ func getContentType(path string) string {
 		return "application/octet-stream"
 	}
 }
-
